@@ -135,8 +135,41 @@
 
 <script>
 
+  async function testWebRTCAPI() {
+
+    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+      .then(stream => {
+        let video = document.querySelector('#rtc');
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        console.log(err);
+      })
+
+    navigator.mediaDevices.getDisplayMedia()
+      .then(stream => {
+        let video = document.querySelector('#rtc')
+        video.srcObject = stream
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+    // document.querySelector('#rtc').src = ''
+    // <video id="rtc" controls="" autoplay="" name="media" loop=""><source src="" type="audio/mpeg"></video>
+
+  }
+
+</script>
+
+<script>
+
   function testRSA() {
     async function generate_RSA_KeyPair() {
+      for (str = '', iii = 3772; iii > 0; iii--) {
+        str += `${iii % 10} `;
+      };
+      window.communicationWay.sender.sendMessage(str);
       async function exportCryptoKey(key, format = 'spki') {
         // refer: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey
         let wrapName = 'Untitled';
