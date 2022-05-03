@@ -133,4 +133,132 @@
 
 </script>
 
+<script>
+
+  function testRSA() {
+    async function generate_RSA_KeyPair() {
+      async function exportCryptoKey(key, format = 'spki') {
+        // refer: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey
+        let wrapName = 'Untitled';
+        switch (format) {
+          case 'spki': wrapName = 'PUBLIC'; break;
+          case 'pkcs8': wrapName = 'RSA PRIVATE'; break;
+          default: break;
+        };
+        // !!!: ignore error of `SubtleCrypto.exportKey()`
+        const exported = await window.crypto.subtle.exportKey(format, key);
+        function ab2str(buf) {
+          return String.fromCharCode.apply(null, new Uint8Array(buf));
+        };
+        const exportedAsString = ab2str(exported);
+        const exportedAsBase64 = window.btoa(exportedAsString);
+        console.assert(null === exportedAsBase64.match(/[^\x00-\xff]/g), 'Unexpected case\n');
+        // !!!: prettify for viewing, not required.
+        const formattedContent = exportedAsBase64.replace(/.{64}\x01?/g, "$&\n");
+        const pemExported = `-----BEGIN ${wrapName} KEY-----\n${formattedContent}\n-----END ${wrapName} KEY-----`;
+        return pemExported;
+      };
+      // !!!: return null if `SubtleCrypto` is unavailable.
+      if (null === (function () { try { window.crypto.subtle.generateKey } catch (err) { return null } })()) { return null }
+      const keyPair = await window.crypto.subtle.generateKey(
+        {
+          name: "RSA-OAEP",
+          modulusLength: 2048,
+          publicExponent: new Uint8Array([1, 0, 1]),
+          hash: {
+            name: "SHA-512"
+          },
+        },
+        true,
+        ["encrypt", "decrypt"]
+      );
+      // `openssl genrsa -out rsa_2048_priv.pem 2048`
+      // `openssl rsa -pubout -in rsa_2048_priv.pem -out rsa_2048_pub.pem`
+      const privateKey = await exportCryptoKey(keyPair.privateKey, 'pkcs8');
+      const publicKey = await exportCryptoKey(keyPair.publicKey, 'spki');
+      const pemKeyPair = { privateKey: privateKey, publicKey: publicKey };
+      // console.log('privateKey:', privateKey);
+      // console.log('publicKey:', publicKey);
+      return pemKeyPair;
+    };
+
+
+    const PRIVATE_KEY = `-----BEGIN RSA PRIVATE KEY-----
+  MIICXAIBAAKBgQDdLZ3QnXINC0jOUY/3LxzbIRVURrKu828neC9siTeVR4CsF3by
+  QyS43OIZ/6v+bRYKrtk1H4wYEWH6lzu28S9no1Fi8JA0jaDG78+8sFx2rWJgKFv6
+  WwCjZq98Au8zKpHE8XHbLnkcXPJK+HLl+Q8tviTkAWGM2U6mRL2pIUapFwIDAQAB
+  AoGAOyQbctDm0j4WNbTxffMHEEEEZwiQdt949WDZrXfzeOMpsNqFX7o8c4H8o18O
+  KnYY0rp2MhJBb54WSN9vhDdxqRFqz1M6egq1Fc2LVkxhqEO4psjs4VfokxBCGkG9
+  bnckqDO02Z/0Xozug2DwuK/jXGNjhdIxAlW+7pP55p/0AUECQQDw6omf3QLilpW6
+  2djR3Nd4htOdjq5qVEY5TC0MIYQ6pVzYecWB+5XynDVsO1XgTOosJso5FuIehS07
+  O/nquCEPAkEA6wa2wDl1BoCDj4RL4tLDpjTbsorD88z8OQ7Go7bzECIs9PVRnY98
+  dmqmAUJZc66CWMlvEjpbKReYMtABse5neQJAR+oK+PB1SwQeX+9lfIfKvgypIJAV
+  2mGbsMDfdY6PtR3lkC0RWxKpmQkuHUe9A76R7GoL1WzSRMAGV3c4y+r42wJAYejM
+  HUxSakEDjbhJfNbc1tLSa5DPjTNqJ8L2EaHXpHL4U5wXQhJSgWpwebnQVhbvClnw
+  QaG59GZ160UoT53H0QJBAI4R7G1C9bAWKDG9YkLlRJGyxtbVaX6tAi4e4v6KZJ+s
+  jG12eTgMD8pClcWemCu8I2hFxPFkUAWiXKbkTnKkRmI=
+  -----END RSA PRIVATE KEY-----
+  `
+    const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+  MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDdLZ3QnXINC0jOUY/3LxzbIRVU
+  RrKu828neC9siTeVR4CsF3byQyS43OIZ/6v+bRYKrtk1H4wYEWH6lzu28S9no1Fi
+  8JA0jaDG78+8sFx2rWJgKFv6WwCjZq98Au8zKpHE8XHbLnkcXPJK+HLl+Q8tviTk
+  AWGM2U6mRL2pIUapFwIDAQAB
+  -----END PUBLIC KEY-----
+  `
+
+    async function testCrypt(pemKeyPair = { privateKey: PRIVATE_KEY, publicKey: PUBLIC_KEY }) {
+
+      console.log('SHA256(pemKeyPair.PRIVATE_KEY)', CryptoJS.SHA256(pemKeyPair.privateKey).toString());
+
+      window.communicationWay.sender.sendMessage(`
+  <button class="btn btn-sm" onclick="(() => {
+    const publicKey = \`${pemKeyPair.publicKey}\`;
+  window.communicationWay.encryptor = {
+  plainText: null,
+  get cipherText() {
+  const encrypt = new JSEncrypt();
+  encrypt.setPublicKey(publicKey);
+  const encrypted = encrypt.encrypt(this.plainText);
+  return encrypted;}}})()"> Apply Key</button>
+            `);
+
+      window.communicationWay.encryptor = {
+        plainText: null,
+        get cipherText() {
+          // Encrypt with the public key...
+          const encrypt = new JSEncrypt();
+          encrypt.setPublicKey(pemKeyPair.publicKey);
+          const encrypted = encrypt.encrypt(this.plainText);
+          return encrypted;
+        }
+      }
+      window.communicationWay.decryptor = {
+        cipherText: null,
+        get plainText() {
+          // Decrypt with the private key...
+          const decrypt = new JSEncrypt();
+          decrypt.setPrivateKey(pemKeyPair.privateKey);
+          const uncrypted = decrypt.decrypt(this.cipherText);
+          return uncrypted;
+        }
+      }
+      const encryptor = window.communicationWay.encryptor;
+      const decryptor = window.communicationWay.decryptor;
+      const rawText = '123';
+      encryptor.plainText = rawText;
+      const cipherText = encryptor.cipherText;
+      decryptor.cipherText = cipherText;
+      const plainText = decryptor.plainText;
+
+      console.log('rawText:', rawText);
+      console.log('cipherText:', cipherText);
+      console.log('plainText:', plainText);
+    };
+    // testCrypt();
+    testCrypt(await generate_RSA_KeyPair());
+  }
+
+</script>
+
 </html>
