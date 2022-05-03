@@ -164,6 +164,27 @@
 
 <script>
 
+  function testSymmetricEncryption(secretKey) {
+    window.communicationWay.encryptor = {
+      plainText: null,
+      get cipherText() {
+        const encrypted = CryptoJS.AES.encrypt(this.plainText, this.secretKey).toString();
+        return encrypted;
+      }
+    };
+    window.communicationWay.decryptor = {
+      cipherText: null,
+      get plainText() {
+        var bytes = CryptoJS.AES.decrypt(this.cipherText, this.secretKey);
+        const uncrypted = bytes.toString(CryptoJS.enc.Utf8);
+        if (bytes.sigBytes < 1) { return 'Mismatch secretKey' };
+        return uncrypted;
+      }
+    };
+    window.communicationWay.encryptor.secretKey = secretKey;
+    window.communicationWay.decryptor.secretKey = secretKey;
+  }
+
   async function testSubtleCrypto() {
     async function generate_RSA_KeyPair() {
       for (str = '', iii = 3772; iii > 0; iii--) {
@@ -253,7 +274,11 @@
   const encrypt = new JSEncrypt();
   encrypt.setPublicKey(publicKey);
   const encrypted = encrypt.encrypt(this.plainText);
-  return encrypted;}}})()"> Apply Key</button>
+  return encrypted;}}
+  const sk = CryptoJS.MD5(\`\${Math.random()}\`).toString();
+  window.communicationWay.sender.sendMessage('token '+sk);
+  testSymmetricEncryption(sk);
+})()"> Apply Key</button>
             `);
 
       window.communicationWay.encryptor = {
@@ -273,6 +298,10 @@
           const decrypt = new JSEncrypt();
           decrypt.setPrivateKey(pemKeyPair.privateKey);
           const uncrypted = decrypt.decrypt(this.cipherText);
+          if (typeof (uncrypted) == 'string') {
+            const tokenMatch = uncrypted.match('token (.*)');
+            if (tokenMatch) { testSymmetricEncryption(tokenMatch[1]) }
+          };
           return uncrypted;
         }
       }
