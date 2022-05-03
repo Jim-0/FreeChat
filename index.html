@@ -83,7 +83,7 @@
     <div id="messageEditSpace" class="p-2 border-top" style="display: flex;" data-color-mode="auto"
       data-dark-theme="dark_dimmed">
 
-      <details class="dropdown details-reset details-overlay d-inline-block mr-2">
+      <details class="dropdown details-reset details-overlay d-inline-block flex-self-end mb-1 mr-2">
         <summary class="btn btn-sm" style="height: 100%;" aria-haspopup="true">More</summary>
 
         <ul class="dropdown-menu dropdown-menu-ne">
@@ -93,8 +93,8 @@
       <button class="btn btn-sm mr-2" type="button" hidden>Say/Tap</button>
       <textarea class="form-control mr-2" id="example-textarea" style="resize: none;flex: auto;" rows="1"
         placeholder="Message"></textarea>
-      <button class="btn btn-sm mr-2" type="button" hidden>Emoji</button>
-      <button class="btn btn-sm btn-primary" type="button" aria-disabled="true">Send</button>
+      <button class="btn btn-sm mr-2 flex-self-end mb-1" type="button" hidden>Emoji</button>
+      <button class="btn btn-sm btn-primary flex-self-end mb-1" type="button" aria-disabled="true">Send</button>
     </div>
 
   </div>
@@ -107,8 +107,17 @@
 </body>
 
 <script>
+
   const headerHeight = document.querySelector('div.Header').clientHeight;
   console.assert(headerHeight == 60);
+
+  function copy(targetElement) {
+    // console.log('copy()', targetElement);
+    window.getSelection().selectAllChildren(targetElement);
+    document.execCommand("copy");
+    window.getSelection().removeAllRanges();
+  }
+
 </script>
 
 <script>
