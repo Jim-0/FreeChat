@@ -12,6 +12,8 @@
   <link href="./public/primer.css" rel="stylesheet" />
   <!-- <link href="https://cdnjs.cloudflare.com/ajax/libs/Primer/20.0.0/truncate.min.css" rel="stylesheet" /> -->
   <link href="./public/truncate.min.css" rel="stylesheet" />
+  <!-- <link href="https://unpkg.com/@github/details-dialog-element/dist/index.css" rel="stylesheet"> -->
+  <link href="./public/details-dialog-element.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -30,15 +32,39 @@
     </div>
     <!-- Full item stretches across -->
     <div class="Header-item Header-item--full"></div>
-    <div display="flex" class="Box-nv15kw-0 Flex-arghxi-0 cEagMo"><svg width="24" height="24" viewBox="0 0 24 24"
-        fill="currentColor" style="display: inline-block; vertical-align: text-bottom;">
-        <path
-          d="M14.78 3.653a3.936 3.936 0 115.567 5.567l-3.627 3.627a3.936 3.936 0 01-5.88-.353.75.75 0 00-1.18.928 5.436 5.436 0 008.12.486l3.628-3.628a5.436 5.436 0 10-7.688-7.688l-3 3a.75.75 0 001.06 1.061l3-3z">
-        </path>
-        <path
-          d="M7.28 11.153a3.936 3.936 0 015.88.353.75.75 0 001.18-.928 5.436 5.436 0 00-8.12-.486L2.592 13.72a5.436 5.436 0 107.688 7.688l3-3a.75.75 0 10-1.06-1.06l-3 3a3.936 3.936 0 01-5.567-5.568l3.627-3.627z">
-        </path>
-      </svg>
+    <div class="Header-item position-relative mr-0">
+      <details class="details-reset details-overlay details-overlay-dark" open="">
+        <summary class="Header-link d-flex flex-items-center">
+          <svg aria-hidden="true" height="24" viewBox="0 0 16 16" version="1.1" width="24" data-view-component="true"
+            class="octicon octicon-three-bars">
+            <path fill-rule="evenodd"
+              d="M1 2.75A.75.75 0 011.75 2h12.5a.75.75 0 110 1.5H1.75A.75.75 0 011 2.75zm0 5A.75.75 0 011.75 7h12.5a.75.75 0 110 1.5H1.75A.75.75 0 011 7.75zM1.75 12a.75.75 0 100 1.5h12.5a.75.75 0 100-1.5H1.75z">
+            </path>
+          </svg>
+        </summary>
+        <details-dialog class="Box Box--overlay d-flex flex-column anim-fade-in fast" data-color-mode="auto"
+          data-dark-theme="dark" style="padding: 1px;">
+          <div class="Box-header">
+            <h3 class="Box-title">About LinkMeta</h3>
+          </div>
+          <div class="markdown-body">
+            <div class="Box-body overflow-auto">
+              <p>An implementation of weak central network communication</p>
+              <p>Key highlights:</p>
+              <ul>
+                <li><code>peer-to-peer</code></li>
+                <li><code>RSA encryption</code></li>
+                <li><code>WebRTC</code></li>
+              </ul>
+            </div>
+          </div>
+          <div class="Box-footer">
+            <button type="button" class="btn btn-block"
+              onclick="(() => {this.parentElement.parentElement.parentElement.open = false;})();">Okay</button>
+          </div>
+        </details-dialog>
+      </details>
+
     </div>
   </div>
 
@@ -133,6 +159,25 @@
 
 </script>
 
+
+<script>
+
+  const messageScrollView = document.querySelector('div#messageLogScrollView');
+  const messageInput = document.getElementById('messageEditSpace').querySelector('textarea');
+
+</script>
+
+<script>
+
+  function testThroughputPerform() {
+    for (str = '', iii = 3772; iii > 0; iii--) {
+      str += `${iii % 10} `;
+    };
+    window.communicationWay.sender.sendMessage(str);
+  };
+
+</script>
+
 <script>
 
   async function testWebRTCAPI() {
@@ -187,10 +232,6 @@
 
   async function testSubtleCrypto() {
     async function generate_RSA_KeyPair() {
-      for (str = '', iii = 3772; iii > 0; iii--) {
-        str += `${iii % 10} `;
-      };
-      window.communicationWay.sender.sendMessage(str);
       async function exportCryptoKey(key, format = 'spki') {
         // refer: https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/exportKey
         let wrapName = 'Untitled';
