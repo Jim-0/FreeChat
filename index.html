@@ -189,6 +189,40 @@
 
   async function testWebRTCAPI() {
 
+    pathControl.insertAdjacentHTML('afterEnd', '<video id="rtc" controls="" autoplay="" name="media" loop=""><source src="" type="audio/mpeg"></video>');
+    window.rtcElement = document.querySelector('#rtc');
+    // document.querySelector('#rtc').src = ''
+    function displayImage(displayImage) {
+      const videoTrack = window.rtcElement.srcObject.getVideoTracks()[0];
+      const imageCapture = new ImageCapture(videoTrack);
+      let canvasElement = document.querySelector('#canvas');
+      if (!canvasElement) {
+        rtcElement.insertAdjacentHTML('beforeBegin', '<canvas id="canvas" style="width: 16px;height: 10px;"></canvas>');
+        canvasElement = document.querySelector('#canvas');
+      };
+      function drawCanvas(canvas, img) {
+        canvas.width = getComputedStyle(canvas).width.split('px')[0];
+        canvas.height = getComputedStyle(canvas).height.split('px')[0];
+        let ratio = Math.min(canvas.width / img.width, canvas.height / img.height);
+        let x = (canvas.width - img.width * ratio) / 2;
+        let y = (canvas.height - img.height * ratio) / 2;
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
+          x, y, img.width * ratio, img.height * ratio);
+      };
+      window.ttt = imageCapture;
+      setInterval(async () => {
+        drawCanvas(canvasElement, await imageCapture.grabFrame());
+        const base64value = canvasElement.toDataURL();
+        const imgHTML = `<img src="${base64value}" alt="" width="57.0" style="caret-color: rgb(0, 0, 0); font-family: -webkit-standard; text-size-adjust: auto;">`
+        document.querySelector('#rtc').insertAdjacentHTML('afterEnd', imgHTML);
+        console.log('imgHTML.length:', imgHTML.length)
+        if (imgHTML.length < 1500) {
+          window.communicationWay.sender.sendMessage(imgHTML);
+        }
+      }, 1000);
+    };
+
     navigator.mediaDevices.getUserMedia({ audio: true, video: true })
       .then(stream => {
         let video = document.querySelector('#rtc');
@@ -202,13 +236,12 @@
       .then(stream => {
         let video = document.querySelector('#rtc')
         video.srcObject = stream
+        displayImage();
       })
       .catch(err => {
         console.log(err)
       })
 
-    // document.querySelector('#rtc').src = ''
-    // <video id="rtc" controls="" autoplay="" name="media" loop=""><source src="" type="audio/mpeg"></video>
 
   }
 
