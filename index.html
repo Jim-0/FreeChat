@@ -130,8 +130,10 @@
 
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.2.1/jsencrypt.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script> -->
+  <script src="./public/crypto-js.min.js"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.2.1/jsencrypt.min.js"></script> -->
+  <script src="./public/jsencrypt.min.js"></script>
 
   <script src="./public/main.js"></script>
 
@@ -311,6 +313,9 @@
 
       console.log('SHA256(pemKeyPair.PRIVATE_KEY)', CryptoJS.SHA256(pemKeyPair.privateKey).toString());
 
+      // `openssl rsa -in PATH_TO_PEM_FILE -pubout -outform DER | openssl sha256 -binary | openssl base64`
+      pemKeyPair.id = CryptoJS.MD5(pemKeyPair.publicKey).toString();
+      localStorageController.unshiftItem(pemKeyPair, '', 2);
       window.communicationWay.sender.sendMessage(`
   <button class="btn btn-sm" onclick="(() => {
     const publicKey = \`${pemKeyPair.publicKey}\`;
