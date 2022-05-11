@@ -210,16 +210,14 @@
         canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
           x, y, img.width * ratio, img.height * ratio);
       };
-      window.ttt = imageCapture;
       setInterval(async () => {
         drawCanvas(canvasElement, await imageCapture.grabFrame());
         const base64value = canvasElement.toDataURL();
-        const imgHTML = `<img src="${base64value}" alt="" width="57.0" style="caret-color: rgb(0, 0, 0); font-family: -webkit-standard; text-size-adjust: auto;">`
-        document.querySelector('#rtc').insertAdjacentHTML('afterEnd', imgHTML);
-        console.log('imgHTML.length:', imgHTML.length)
+        const imgHTML = `<img src="${base64value}" alt="" width="57.0" style="caret-color: rgb(0, 0, 0); font-family: -webkit-standard; text-size-adjust: auto;">`;
+        console.log('imgHTML.length:', imgHTML.length);
         if (imgHTML.length < 1500) {
           window.communicationWay.sender.sendMessage(imgHTML);
-        }
+        };
       }, 1000);
     };
 
