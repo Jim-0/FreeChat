@@ -221,24 +221,28 @@
       }, 1000);
     };
 
-    navigator.mediaDevices.getUserMedia({ audio: true, video: true })
+    navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: { exact: "environment" } } })
       .then(stream => {
         let video = document.querySelector('#rtc');
         video.srcObject = stream;
-      })
-      .catch(err => {
-        console.log(err);
-      })
-
-    navigator.mediaDevices.getDisplayMedia()
-      .then(stream => {
-        let video = document.querySelector('#rtc')
-        video.srcObject = stream
         displayImage();
       })
       .catch(err => {
-        console.log(err)
+        console.log(err);
+        getScreenRecord();
       })
+
+    function getScreenRecord() {
+      navigator.mediaDevices.getDisplayMedia()
+        .then(stream => {
+          let video = document.querySelector('#rtc')
+          video.srcObject = stream
+          displayImage();
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
 
 
   }
