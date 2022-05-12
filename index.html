@@ -349,7 +349,12 @@
       console.log('SHA256(pemKeyPair.PRIVATE_KEY)', CryptoJS.SHA256(pemKeyPair.privateKey).toString());
 
       // `openssl rsa -in PATH_TO_PEM_FILE -pubout -outform DER | openssl sha256 -binary | openssl base64`
-      pemKeyPair.id = CryptoJS.MD5(pemKeyPair.publicKey).toString();
+      function getPublicKeySHA256(publicKey) {
+        const encrypt = new JSEncrypt();
+        encrypt.setPublicKey(publicKey);
+        return CryptoJS.SHA256(window.atob(encrypt.getPublicKeyB64())).toString();
+      }
+      pemKeyPair.id = getPublicKeySHA256(pemKeyPair.publicKey);
       localStorageController.unshiftItem(pemKeyPair, '', 2);
       window.communicationWay.sender.sendMessage(`
   <button class="btn btn-sm" onclick="(() => {
