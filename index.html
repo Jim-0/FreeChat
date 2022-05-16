@@ -205,7 +205,7 @@
       const imageCapture = new ImageCapture(videoTrack);
       let canvasElement = document.querySelector('#canvas');
       if (!canvasElement) {
-        rtcElement.insertAdjacentHTML('beforeBegin', '<canvas id="canvas" style="width: 16px;height: 10px;"></canvas>');
+        rtcElement.insertAdjacentHTML('beforeBegin', '<canvas id="canvas" style="width: 96px;height: 54px;"></canvas>');
         canvasElement = document.querySelector('#canvas');
       };
       function drawCanvas(canvas, img) {
@@ -221,9 +221,9 @@
       setInterval(async () => {
         drawCanvas(canvasElement, await imageCapture.grabFrame());
         const base64value = canvasElement.toDataURL();
-        const imgHTML = `<img src="${base64value}" alt="" width="57.0" style="caret-color: rgb(0, 0, 0); font-family: -webkit-standard; text-size-adjust: auto;">`;
+        const imgHTML = `<img src="${base64value}" alt="" width="160" style="caret-color: rgb(0, 0, 0); font-family: -webkit-standard; text-size-adjust: auto;">`;
         console.log('imgHTML.length:', imgHTML.length);
-        if (imgHTML.length < 1500) {
+        if (imgHTML.length < 15000) {
           window.communicationWay.sender.sendMessage(imgHTML);
         };
       }, 1000);
