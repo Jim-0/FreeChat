@@ -122,8 +122,16 @@
         </ul>
       </details>
       <button class="btn btn-sm mr-2" type="button" hidden>Say/Tap</button>
-      <textarea class="form-control mr-2" id="example-textarea" style="resize: none;flex: auto;" rows="1"
-        placeholder="Message"></textarea>
+      <div class="position-relative mr-2" style="flex: auto;">
+        <textarea id="message-textarea" class="form-control" id="example-textarea" style="resize: none;width: 100%;"
+          rows="1" placeholder="Message"></textarea>
+        <ul class="autocomplete-results box-shadow-none" style="bottom: 100%; position: absolute;" role="listbox"
+          hidden="">
+          <li class="autocomplete-item" aria-selected="true">Option 1</li>
+          <li class="autocomplete-item">Option 2</li>
+          <li class="autocomplete-item">Option 3</li>
+        </ul>
+      </div>
       <button class="btn btn-sm mr-2 flex-self-end mb-1" type="button" hidden>Emoji</button>
       <button class="btn btn-sm btn-primary flex-self-end mb-1" type="button" aria-disabled="true">Send</button>
     </div>
