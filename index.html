@@ -122,9 +122,12 @@
         </ul>
       </details>
       <button class="btn btn-sm mr-2" type="button" hidden>Say/Tap</button>
+      <input id="fileUploadInput" type="file" multiple hidden>
       <div class="position-relative mr-2" style="flex: auto;">
         <textarea id="message-textarea" class="form-control" id="example-textarea" style="resize: none;width: 100%;"
-          rows="1" placeholder="Message"></textarea>
+          rows="1" placeholder="Message" ondragenter="event.stopPropagation(); event.preventDefault();"
+          ondragover="event.stopPropagation(); event.preventDefault();"
+          ondrop="event.stopPropagation(); event.preventDefault(); const file = event.dataTransfer.files[0]; this.textContent = (typeof file) + file.name + file.size;"></textarea>
         <ul class="autocomplete-results box-shadow-none" style="bottom: 100%; position: absolute;" role="listbox"
           hidden="">
           <li class="autocomplete-item" aria-selected="true">Option 1</li>
@@ -135,6 +138,22 @@
       <button class="btn btn-sm mr-2 flex-self-end mb-1" type="button" hidden>Emoji</button>
       <button class="btn btn-sm btn-primary flex-self-end mb-1" type="button" aria-disabled="true">Send</button>
     </div>
+    <div style="
+      width: 3px;
+      height: 3px;
+      /* background-color: red; */
+      position: fixed;
+      left: 100px;
+      top: 100px;
+  " hidden>
+      <div id="contextMenuPopover" class="Popover anim-fade-in" style="position: absolute;visibility: visible;">
+        <div class="Popover-message Popover-message--bottom" style="width: auto;">
+          <div class="BtnGroup d-flex">
+            <div class="BtnGroup-item btn btn-sm" ${onclick}>${textContent}</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
   </div>
 
@@ -142,6 +161,8 @@
   <script src="./public/crypto-js.min.js"></script>
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.2.1/jsencrypt.min.js"></script> -->
   <script src="./public/jsencrypt.min.js"></script>
+
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.0.4/pako.min.js"></script> -->
 
   <script src="./public/main.js"></script>
 
@@ -254,6 +275,7 @@
 
 
   }
+
 
 </script>
 
